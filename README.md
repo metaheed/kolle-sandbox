@@ -22,12 +22,38 @@ Stardog: https://cloud.stardog.com/ server address http://localhost:5820
 
 
 ## Upload kolle connection url 
-In left side kolle menu, update url   
+In left side kolle menu, update config url for sandbox   
 
-kafka-schema-registry: http://schema-registry:8081  
-kafka-connector:       http://connect:8083  
-ksqldb:                http://ksqldb-server:8088  
-broker:                broker:29092  
+```
+{:runtime-config
+ {:kafka-rest-url "http://localhost:8082",
+  :kafka-schema-registry
+  {:url "http://schema-registry:8081", :api-key nil, :secret nil},
+  :kafka-connector
+  {:url "http://connect:8083",
+   :api-key nil,
+   :secret nil,
+   :environment-id nil,
+   :cluster-id nil},
+  :ksqldb {:url "http://ksqldb-server:8088", :api-key nil, :secret nil},
+  :kafka-broker
+  {:bootstrap.servers "broker:29092", :api-key nil, :secret nil},
+  :offset "earliest",
+  :query-id-m {}},
+ :gen-config
+ {:map-dv
+  {:attr
+   {:load_process 1, :record_source 2, :record_source_ou 20, :test 3},
+   :fn nil},
+  :distinct {:duration "10 MINUTES"},
+  :replicas 1,
+  :partitions 1,
+  :join-window "WITHIN 5 MINUTES",
+  :monitor-stream false, 
+  :join-split false, 
+  :error-stream-name "error"}}
+```
+
 
 
 
