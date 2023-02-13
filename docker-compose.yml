@@ -139,6 +139,16 @@ services:
       KSQL_LOG4J_OPTS: "-Dksql.log.dir=/ksql/log -Dlog4j.configuration=file:/ksql/log4j-rolling.properties "
 
 
+  kolle:
+    image: ghcr.io/metaheed/kolle:v0.0.01
+    hostname: kolle
+    container_name: kolle
+    ports:
+      - 3000:3000
+    volumes: 
+      - ./storage/kolle:/root/.kolle
+
+
   postgres:
     image: postgres
     hostname: postgres
@@ -161,13 +171,52 @@ services:
       - 8080:8080
 
 
-  kolle:
-    image: ghcr.io/metaheed/kolle:v0.0.01
-    hostname: kolle
-    container_name: kolle
-    ports:
-      - 3000:3000
-    volumes: 
-      - ./storage/kolle:/root/.kolle
+  stardog:
+    #stardog-overwrites here
+    hostname: stardog
+    image: stardog/stardog
+    container_name: stardog
+    volumes:
+     - ./storage/stardog/stardog-license-key.bin:/var/opt/stardog/stardog-license-key.bin
+     - ./storage/stardog/stardog.properties:/var/opt/stardog/stardog.properties
+     - ./storage/stardog/database-template.properties:/var/opt/stardog/database-template.properties
+     # Consider to persist database file on the host machine via mounted volumes
+     - ./storage/stardog:/var/opt/stardog                  # main Stardog directory where database files will be stored, ideally on SSD
+     - ./storage/stardog/tmp:/var/opt/tmp                  # directory for temporary files (potentially big)
+     - ./storage/stardog/ext:/var/opt/stardog-ext          # directory for additional jar files, e.g. jdbc drivers etc
+     #  - ./stardog-opennlp:/var/opt/stardog-opennlp  # directory for opennlp models
 
+     # Optionally, for RDF files to be imported and virtual graph configs
+     #- "/local/host/rdf-datasets:/datasets"
+     #- "/local/host/virtual-graphs-config:/var/opt/virtual-graphs-config"
+    ports:
+     - "5820:5820" # expose on local host port 5820 i.e. for local development
+    #environment:
+    #  - STARDOG_SERVER_JAVA_ARGS=-Djava.io.tmpdir=/var/opt/tmp -Xms4g -Xmx4g -XX:MaxDirectMemorySize=8g
+
+  elasticsearch:
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    container_name: elasticsearch
+    #restart: always
+    depends_on:
+      - connect
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.6.0
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    environment:
+      xpack.security.enabled: "false"
+      discovery.type: "single-node"
 
