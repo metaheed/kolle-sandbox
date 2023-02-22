@@ -10,6 +10,8 @@
  sudo docker-compose up -d control-center ksqldb-server connect schema-registry broker zookeeper adminer postgres kolle  
  or   
  sudo docker-compose up -d control-center ksqldb-server connect schema-registry broker zookeeper stardog kolle  
+ or   
+ sudo docker-compose up -d control-center ksqldb-server connect schema-registry broker zookeeper postgres metabase adminer kolle 
 ```
 
 ## URL

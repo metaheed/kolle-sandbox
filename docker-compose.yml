@@ -140,7 +140,7 @@ services:
 
 
   kolle:
-    image: ghcr.io/metaheed/kolle:v0.0.01
+    image: ghcr.io/metaheed/kolle:latest
     hostname: kolle
     container_name: kolle
     ports:
@@ -162,7 +162,24 @@ services:
     volumes:
       - ./storage/postgresql/data:/var/lib/postgresql/data
 
- 
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    hostname: metabase
+    volumes:
+    - ./storage/metabase/urandom:/dev/random:ro
+    ports:
+      - 3001:3000
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: admin
+      MB_DB_PASS: letmein
+      MB_DB_HOST: postgres
+    depends_on:
+      - postgres
+
   adminer:
     image: adminer
     hostname: adminer
@@ -177,9 +194,10 @@ services:
     image: stardog/stardog
     container_name: stardog
     volumes:
-     - ./storage/stardog/stardog-license-key.bin:/var/opt/stardog/stardog-license-key.bin
-     - ./storage/stardog/stardog.properties:/var/opt/stardog/stardog.properties
-     - ./storage/stardog/database-template.properties:/var/opt/stardog/database-template.properties
+   #  - ./storage/stardog/stardog-license-key.bin:/var/opt/stardog/stardog-license-key.bin
+#     - ./storage/stardog/stardog.properties:/var/opt/stardog/stardog.properties
+  #   - ./storage/stardog/database-template.properties:/var/opt/stardog/database-template.properties
+ #    - ./storage/stardog/jwt.yaml:/etc/stardog/jwt.yaml
      # Consider to persist database file on the host machine via mounted volumes
      - ./storage/stardog:/var/opt/stardog                  # main Stardog directory where database files will be stored, ideally on SSD
      - ./storage/stardog/tmp:/var/opt/tmp                  # directory for temporary files (potentially big)
@@ -219,4 +237,5 @@ services:
     environment:
       xpack.security.enabled: "false"
       discovery.type: "single-node"
+
 
