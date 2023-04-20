@@ -63,4 +63,4 @@ In left side kolle menu, update config url for sandbox
 
 Copyright © 2022-2023 Abdullah Mamun
 
-Distributed under the EPL License. See LICENSE.
+Distributed under the MIT License. See LICENSE.
